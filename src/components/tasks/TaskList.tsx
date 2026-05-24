@@ -8,9 +8,10 @@ interface TaskListProps {
   totalCount: number;
   filter: TaskFilter;
   searchQuery: string;
+  enableLayoutAnimation: boolean;
   onToggle: (id: string) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: string) => void;
+  onDeleteRequest: (task: Task) => void;
 }
 
 function EmptyState({
@@ -29,7 +30,7 @@ function EmptyState({
       className="surface-card flex flex-col items-center justify-center px-6 py-16 text-center"
     >
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
-        <Icon className="h-7 w-7 text-slate-400" />
+        <Icon className="h-7 w-7 text-slate-400" aria-hidden />
       </div>
       <p className="text-base font-medium text-slate-700 dark:text-slate-200">{title}</p>
       <p className="mt-1 max-w-sm text-sm text-muted">{description}</p>
@@ -42,9 +43,10 @@ export function TaskList({
   totalCount,
   filter,
   searchQuery,
+  enableLayoutAnimation,
   onToggle,
   onEdit,
-  onDelete,
+  onDeleteRequest,
 }: TaskListProps) {
   if (tasks.length === 0) {
     const hasFilters = filter !== 'all' || searchQuery.trim().length > 0;
@@ -68,18 +70,27 @@ export function TaskList({
         />
       );
     }
+
+    return (
+      <EmptyState
+        icon={ClipboardList}
+        title="No tasks to show"
+        description="Your task list appears empty. Add a task to get started."
+      />
+    );
   }
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-3" aria-label="Task list">
       <AnimatePresence mode="popLayout">
         {tasks.map((task) => (
           <TaskItem
             key={task.id}
             task={task}
+            enableLayoutAnimation={enableLayoutAnimation}
             onToggle={onToggle}
             onEdit={onEdit}
-            onDelete={onDelete}
+            onDeleteRequest={onDeleteRequest}
           />
         ))}
       </AnimatePresence>

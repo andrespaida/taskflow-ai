@@ -7,9 +7,10 @@ export interface TaskContextValue {
   filter: TaskFilter;
   searchQuery: string;
   stats: TaskStats;
+  enableLayoutAnimation: boolean;
   setFilter: (filter: TaskFilter) => void;
   setSearchQuery: (query: string) => void;
-  addTask: (input: TaskInput) => void;
+  addTask: (input: TaskInput) => Task;
   updateTask: (id: string, updates: Partial<Omit<Task, 'id' | 'createdAt'>>) => void;
   deleteTask: (id: string) => void;
   toggleTask: (id: string) => void;

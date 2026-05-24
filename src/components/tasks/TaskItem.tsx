@@ -9,17 +9,24 @@ import { Button } from '../ui/Button';
 
 interface TaskItemProps {
   task: Task;
+  enableLayoutAnimation: boolean;
   onToggle: (id: string) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: string) => void;
+  onDeleteRequest: (task: Task) => void;
 }
 
-export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
+export function TaskItem({
+  task,
+  enableLayoutAnimation,
+  onToggle,
+  onEdit,
+  onDeleteRequest,
+}: TaskItemProps) {
   const priority = getPriorityOption(task.priority);
 
   return (
     <motion.li
-      layout
+      layout={enableLayoutAnimation}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -16, transition: { duration: 0.18 } }}
@@ -57,10 +64,12 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
             </p>
           )}
 
-          <p className="mt-2.5 text-xs text-muted">{formatRelativeTime(task.updatedAt)}</p>
+          <p className="mt-2.5 text-xs text-muted">
+            <time dateTime={task.updatedAt}>{formatRelativeTime(task.updatedAt)}</time>
+          </p>
         </div>
 
-        <div className="flex shrink-0 gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+        <div className="flex shrink-0 gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
           <Button
             variant="ghost"
             size="sm"
@@ -72,7 +81,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onDelete(task.id)}
+            onClick={() => onDeleteRequest(task)}
             aria-label={`Delete ${task.title}`}
             className="text-rose-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/50"
           >

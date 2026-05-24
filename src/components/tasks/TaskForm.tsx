@@ -42,9 +42,13 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
           <h2 className="text-sm font-semibold text-slate-900 dark:text-white">New task</h2>
           <p className="text-xs text-muted">Capture what you need to get done next</p>
         </div>
-        {!expanded && (
+        {!expanded ? (
           <Button type="button" variant="ghost" size="sm" onClick={() => setExpanded(true)}>
             Show details
+          </Button>
+        ) : (
+          <Button type="button" variant="ghost" size="sm" onClick={() => setExpanded(false)}>
+            Hide details
           </Button>
         )}
       </div>
@@ -57,6 +61,7 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
               placeholder="What needs to be done?"
               value={title}
               error={error}
+              maxLength={200}
               onChange={(event) => {
                 setTitle(event.target.value);
                 if (error) setError('');

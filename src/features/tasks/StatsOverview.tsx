@@ -14,7 +14,7 @@ const cards = [
 
 export function StatsOverview({ stats }: StatsOverviewProps) {
   return (
-    <section className="mb-6 grid gap-3 sm:grid-cols-3">
+    <section className="mb-6 grid gap-3 sm:grid-cols-3" aria-label="Task statistics">
       {cards.map(({ key, label, icon: Icon, getValue }, index) => (
         <motion.div
           key={key}

@@ -15,7 +15,13 @@ export function Checkbox({ checked, onChange, label }: CheckboxProps) {
       aria-checked={checked}
       aria-label={label ?? 'Toggle completion'}
       onClick={onChange}
-      className={`group relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200 ${
+      onKeyDown={(event) => {
+        if (event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          onChange();
+        }
+      }}
+      className={`focus-ring group relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200 ${
         checked
           ? 'border-brand-500 bg-brand-500'
           : 'border-slate-300 hover:border-brand-400 dark:border-slate-600 dark:hover:border-brand-400'
@@ -25,6 +31,7 @@ export function Checkbox({ checked, onChange, label }: CheckboxProps) {
         initial={false}
         animate={{ scale: checked ? 1 : 0, opacity: checked ? 1 : 0 }}
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        aria-hidden
       >
         <Check className="h-3 w-3 text-white" strokeWidth={3} />
       </motion.span>

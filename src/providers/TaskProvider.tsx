@@ -1,22 +1,29 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { TaskContext } from '../contexts/task-context';
 import { STORAGE_KEYS } from '../constants/filters';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { Task, TaskFilter, TaskInput } from '../types/task';
 import { generateId } from '../utils/storage';
+import { parseFilter, parseTasks } from '../utils/validateStorage';
 import { filterTasks, getTaskStats, searchTasks, sortTasks } from '../utils/taskHelpers';
 
+const LAYOUT_ANIMATION_LIMIT = 40;
+
 export function TaskProvider({ children }: { children: ReactNode }) {
-  const [tasks, setTasks] = useLocalStorage<Task[]>(STORAGE_KEYS.tasks, []);
-  const [filter, setFilter] = useLocalStorage<TaskFilter>(STORAGE_KEYS.filter, 'all');
+  const [tasks, setTasks] = useLocalStorage<Task[]>(STORAGE_KEYS.tasks, [], parseTasks);
+  const [filter, setFilter] = useLocalStorage<TaskFilter>(STORAGE_KEYS.filter, 'all', parseFilter);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebouncedValue(searchQuery, 250);
 
   const stats = useMemo(() => getTaskStats(tasks), [tasks]);
 
   const visibleTasks = useMemo(
-    () => sortTasks(searchTasks(filterTasks(tasks, filter), searchQuery)),
-    [tasks, filter, searchQuery],
+    () => sortTasks(searchTasks(filterTasks(tasks, filter), debouncedSearch)),
+    [tasks, filter, debouncedSearch],
   );
+
+  const enableLayoutAnimation = tasks.length <= LAYOUT_ANIMATION_LIMIT;
 
   const addTask = useCallback(
     (input: TaskInput) => {
@@ -31,6 +38,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         updatedAt: now,
       };
       setTasks((prev) => [task, ...prev]);
+      return task;
     },
     [setTasks],
   );
@@ -78,6 +86,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       filter,
       searchQuery,
       stats,
+      enableLayoutAnimation,
       setFilter,
       setSearchQuery,
       addTask,
@@ -92,6 +101,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       filter,
       searchQuery,
       stats,
+      enableLayoutAnimation,
       setFilter,
       addTask,
       updateTask,
